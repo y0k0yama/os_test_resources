@@ -1,0 +1,43 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: httpd-svc
+spec:
+  to:
+    kind: Service
+    name: httpd-svc
+  port:
+    targetPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpd-svc
+spec:
+  selector:
+    app: httpd-ex
+  ports:
+  - port: 8080
+    targetPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd-ex-deployment
+spec:
+  selector:
+    matchLabels:
+      app: httpd-ex
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: httpd-ex
+    spec:
+      containers:
+      - name: httpd-ex
+        image: image-registry.openshift-image-registry.svc:5000/y0k0yama16ak1-dev/os_test_apache:latest
+        ports:
+        - containerPort: 8080
